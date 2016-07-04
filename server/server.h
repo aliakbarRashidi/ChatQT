@@ -1,31 +1,34 @@
 #ifndef SERVER_H
 #define SERVER_H
-#include <QObject>
+
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QAbstractSocket>
-#include <QThreadPool>
 #include <QDebug>
-#include "runnable.h"
+#include <QVector>
+#include <QMap>
+#include <QSet>
 
 class Server : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit Server(QObject * parent =0);
+    explicit Server(QObject *parent = 0);
     void startServer();
-
-protected:
-    void incomingConnection(int m_descriptor);
-
 signals:
 
 public slots:
+    void readyRead();
+    void disconnected();
+    void sendUserList();
+
+protected:
+    void incomingConnection(qintptr socketDescriptor);
 
 private:
-    QThreadPool *pool;
-
-
+    QSet<QTcpSocket*> clients;
+    QMap<QTcpSocket*,QString> users;
+    int identificator;
+    QStringList list;
 };
 
 #endif // SERVER_H
